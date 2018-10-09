@@ -19,10 +19,10 @@ class ApplicationUI:
         self.image_frame = tkinter.Frame(self.root)
         self.image_frame.pack()
 
-        self.original_width_label = tkinter.Label(self.top_frame, text="Rectangle original width", font=self.standard_font)
-        self.original_width_label.pack(side = tkinter.LEFT)
+        self.instructions_label = tkinter.Label(self.top_frame, text="Select two pairs of originally parallel lines.   ", font=self.standard_font)
+        self.instructions_label.pack(side = tkinter.LEFT)
 
-        self.original_width_entry = tkinter.Entry(self.top_frame)
+        """self.original_width_entry = tkinter.Entry(self.top_frame)
         self.original_width_entry["font"] = self.standard_font
         self.original_width_entry["width"] = self.standard_entry_width
         self.original_width_entry.pack(side = tkinter.LEFT)
@@ -34,7 +34,7 @@ class ApplicationUI:
         self.original_height_entry = tkinter.Entry(self.top_frame)
         self.original_height_entry["font"] = self.standard_font
         self.original_height_entry["width"] = self.standard_entry_width
-        self.original_height_entry.pack(side = tkinter.LEFT)
+        self.original_height_entry.pack(side = tkinter.LEFT)"""
 
         self.select_image_button = tkinter.Button(self.top_frame, text="Select Image")
         self.select_image_button["font"] = self.standard_font
@@ -42,7 +42,7 @@ class ApplicationUI:
         self.select_image_button["command"] = self.select_image
         self.select_image_button.pack(side = tkinter.LEFT)
 
-        self.transform_button = tkinter.Button(self.top_frame, text="Transform")
+        self.transform_button = tkinter.Button(self.top_frame, text="Go To Step 2")
         self.transform_button["font"] = self.standard_font
         self.transform_button["width"] = self.standard_entry_width
         self.transform_button["command"] = self.transform_image
@@ -51,8 +51,8 @@ class ApplicationUI:
 
         self.image_file_name = ""
         self.image_data = None
-        #self.clicks_counted = 0
 
+        self.current_step = 1
         self.clicked_points_list = []
 
     def run(self):
@@ -65,33 +65,44 @@ class ApplicationUI:
         deformed_image_width = deformed_image_array.shape[1]
         deformed_image_height = deformed_image_array.shape[0]
 
-        int_original_width_entry = int(self.original_width_entry.get())
-        int_original_height_entry = int(self.original_height_entry.get())
+        #int_original_width_entry = int(self.original_width_entry.get())
+        #int_original_height_entry = int(self.original_height_entry.get())
 
-        biggest_side_size = int_original_width_entry if int_original_width_entry > int_original_height_entry else int_original_height_entry
+        #biggest_side_size = int_original_width_entry if int_original_width_entry > int_original_height_entry else int_original_height_entry
 
         # normalizing
-        rectangle_width = int((int_original_width_entry / biggest_side_size) * 1000)
-        rectangle_height = int((int_original_height_entry / biggest_side_size) * 1000)
+        #rectangle_width = int((int_original_width_entry / biggest_side_size) * 1000)
+        #rectangle_height = int((int_original_height_entry / biggest_side_size) * 1000)
 
         #print(type(deformed_image_array))
-        #print(deformed_image_array.shape, deformed_image_width, deformed_image_height)
-        #print(deformed_image_array[0])
-        #print(deformed_image_array[0][0])
+        print(deformed_image_array.shape, deformed_image_width, deformed_image_height)
+        print(deformed_image_array[0])
+        print(deformed_image_array[0][0])
 
-        """
+        
+        """deformed_points = np.matrix([
+            [385, 308, 1],
+            [404, 112, 1],
+            [405, 310, 1],
+            [420, 113, 1],
+            [686, 287, 1],
+            [651, 119, 1],
+            [707, 302, 1],
+            [662, 110, 1],
+        ])"""
+
         deformed_points = np.matrix([
-            #[103, 275],
-            #[108, 193],
-            #[122, 199],
-            #[117, 270],
-            [439, 718],
-            [402, 59],
-            [800, 140],
-            [801, 524],
+            [404, 114, 1],
+            [386, 302, 1],
+            [421, 124, 1],
+            [407, 290, 1],
+            [651, 119, 1],
+            [686, 285, 1],
+            [666, 112, 1],
+            [709, 299, 1],
         ])
 
-        original_points = np.matrix([
+        """original_points = np.matrix([
             #[0, 0],
             #[0, 600],
             #[800, 600],
@@ -103,17 +114,84 @@ class ApplicationUI:
 
         ])"""
 
-        deformed_points = self.clicked_points_list
+        #deformed_points = self.clicked_points_list
 
-        original_points = np.matrix([
-            [0, rectangle_height],
-            [0, 0],
-            [rectangle_width, 0],
-            [rectangle_width, rectangle_height],
-
-        ])
+        #original_points = np.matrix([
+        #    [0, rectangle_height],
+        #    [0, 0],
+        #    [rectangle_width, 0],
+        #    [rectangle_width, rectangle_height],
+        #
+        #])
 
         #original_points = original_points * 0.1
+
+        print(deformed_points)
+        line_one = np.cross(deformed_points[0], deformed_points[1])
+        line_two = np.cross(deformed_points[2], deformed_points[3])
+        line_three = np.cross(deformed_points[4], deformed_points[5])
+        line_four = np.cross(deformed_points[6], deformed_points[7])
+
+        print("lines", line_one, line_two, line_three, line_four)
+
+        line_one = (line_one * (1/line_one[0, 2]))#.astype(int)
+        line_two = (line_two * (1/line_two[0, 2]))#.astype(int)
+        line_three = (line_three * (1/line_three[0, 2]))#.astype(int)
+        line_four = (line_four * (1/line_four[0, 2]))#.astype(int)
+
+        print("lines", line_one, line_two, line_three, line_four)
+
+        point_one_in_the_infinite = np.cross(line_one, line_two)
+        point_two_in_the_infinite = np.cross(line_three, line_four)
+
+        print("points in the infinite", point_one_in_the_infinite, point_two_in_the_infinite)
+
+        line_in_the_infinite = np.cross(point_one_in_the_infinite, point_two_in_the_infinite)
+
+        print("line in the infinite", line_in_the_infinite)
+
+        # matrix to transform from projective space to affine
+        projective_homography_matrix = np.matrix([
+            [1, 0, 0], 
+            [0, 1, 0], 
+            [line_in_the_infinite[0, 0], line_in_the_infinite[0, 1], line_in_the_infinite[0, 2]]
+        ])
+
+        print(projective_homography_matrix)
+
+
+        affine_homography_matrix = None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        """
 
         A = np.zeros((8, 8))
 
@@ -164,6 +242,8 @@ class ApplicationUI:
         #print(homography_matrix_inverse)
 
 
+        #"""
+
         """op = np.matrix([[original_points[0, 0], original_points[0, 1], 1]])
         transformed_point = homography_matrix_inverse * op.T
         print(op)
@@ -177,8 +257,16 @@ class ApplicationUI:
         transformed_point = homography_matrix * dp.T
         print(dp)
         print(transformed_point)
-        print(int(transformed_point[0,0]/transformed_point[2,0]), int(transformed_point[1,0]/transformed_point[2,0]))"""
+        print(int(transformed_point[0,0]/transformed_point[2,0]), int(transformed_point[1,0]/transformed_point[2,0]))
 
+        #"""
+
+        #homography_matrix = affine_homography_matrix * projective_homography_matrix
+        
+        #homography_matrix = np.linalg.inv(projective_homography_matrix)
+        #homography_matrix_inverse = projective_homography_matrix
+        homography_matrix = projective_homography_matrix
+        homography_matrix_inverse = np.linalg.inv(projective_homography_matrix)
 
         # Defining points of interest
         deformed_x_min = 0
@@ -191,10 +279,17 @@ class ApplicationUI:
         pre_corner2 = homography_matrix * np.matrix([[deformed_x_max, deformed_y_max, 1]]).T
         pre_corner3 = homography_matrix * np.matrix([[deformed_x_max, deformed_y_min, 1]]).T
 
+        print("pre", pre_corner0, pre_corner1, pre_corner2, pre_corner3)
+
         pre_corner0 = np.matrix([[int(pre_corner0[0,0] / pre_corner0[2,0]), int(pre_corner0[1,0] / pre_corner0[2,0]), int(pre_corner0[2,0] / pre_corner0[2,0])]]).T
         pre_corner1 = np.matrix([[int(pre_corner1[0,0] / pre_corner1[2,0]), int(pre_corner1[1,0] / pre_corner1[2,0]), int(pre_corner1[2,0] / pre_corner1[2,0])]]).T
         pre_corner2 = np.matrix([[int(pre_corner2[0,0] / pre_corner2[2,0]), int(pre_corner2[1,0] / pre_corner2[2,0]), int(pre_corner2[2,0] / pre_corner2[2,0])]]).T
         pre_corner3 = np.matrix([[int(pre_corner3[0,0] / pre_corner3[2,0]), int(pre_corner3[1,0] / pre_corner3[2,0]), int(pre_corner3[2,0] / pre_corner3[2,0])]]).T
+
+        #pre_corner0 = pre_corner0.astype(int)
+        #pre_corner1 = pre_corner1.astype(int)
+        #pre_corner2 = pre_corner2.astype(int)
+        #pre_corner3 = pre_corner3.astype(int)
 
         print("pre", pre_corner0, pre_corner1, pre_corner2, pre_corner3)
 
@@ -232,7 +327,7 @@ class ApplicationUI:
         #output_width = int(total_x)
         #output_height = int(total_y)
 
-        print("dims", output_width, output_height)
+        #print("dims", output_width, output_height)
 
         step_x = total_x / output_width
         step_y = total_y / output_height
@@ -242,10 +337,10 @@ class ApplicationUI:
         output_image_array = np.zeros((output_height, output_width, 3), dtype=np.int)
 
         #print(type(output_image_array))
-        #print(output_image_array.shape)
+        print(output_image_array.shape)
 
-        #print("border points", x_min, y_min)
-        #print(homography_matrix_inverse * np.matrix([[x_min, y_min, 1]]).T)
+        print("border points", x_min, y_min)
+        print(homography_matrix_inverse * np.matrix([[x_min, y_min, 1]]).T)
         #print("\n")
 
         for x in range(0, output_width):
@@ -266,7 +361,7 @@ class ApplicationUI:
 
         #print(output_image_array[0])
         #print(output_image_array[0][0])
-        #print(output_image_array.shape)
+        print(output_image_array.shape)
 
         output_image = Image.fromarray(output_image_array.astype('uint8'))
         #output_image.show()
@@ -295,10 +390,13 @@ class ApplicationUI:
         y = event.y
         r = 10 # radius
 
-        if len(self.clicked_points_list) <= 3:
+        # TODO Change the else condition value
+        maximun_points = 8 if self.current_step == 1 else 0
+
+        if len(self.clicked_points_list) < maximun_points:
             self.image_canvas.create_oval(x-r, y-r, x+r, y+r, width=3, outline="#fb0")
 
-            self.clicked_points_list.append([x, y])
+            self.clicked_points_list.append([x, y, 1])
 
         else:
             self.image_canvas.create_oval(x-r, y-r, x+r, y+r, width=3, outline="red")
