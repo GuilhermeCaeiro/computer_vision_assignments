@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.linalg
 import tkinter
 from tkinter import filedialog
 from PIL import Image, ImageTk
@@ -45,7 +46,7 @@ class ApplicationUI:
         self.transform_button = tkinter.Button(self.top_frame, text="Go To Step 2")
         self.transform_button["font"] = self.standard_font
         self.transform_button["width"] = self.standard_entry_width
-        self.transform_button["command"] = self.transform_image
+        self.transform_button["command"] = self.transform_to_affine
         self.transform_button.pack(side = tkinter.LEFT)
 
 
@@ -58,26 +59,10 @@ class ApplicationUI:
     def run(self):
         self.root.mainloop()
 
-    def transform_image(self):
+    def transform_to_affine(self):
         print("Working")
 
-        deformed_image_array = np.array(self.image_data)
-        deformed_image_width = deformed_image_array.shape[1]
-        deformed_image_height = deformed_image_array.shape[0]
-
-        #int_original_width_entry = int(self.original_width_entry.get())
-        #int_original_height_entry = int(self.original_height_entry.get())
-
-        #biggest_side_size = int_original_width_entry if int_original_width_entry > int_original_height_entry else int_original_height_entry
-
-        # normalizing
-        #rectangle_width = int((int_original_width_entry / biggest_side_size) * 1000)
-        #rectangle_height = int((int_original_height_entry / biggest_side_size) * 1000)
-
-        #print(type(deformed_image_array))
-        print(deformed_image_array.shape, deformed_image_width, deformed_image_height)
-        print(deformed_image_array[0])
-        print(deformed_image_array[0][0])
+        
 
         
         """deformed_points = np.matrix([
@@ -91,40 +76,43 @@ class ApplicationUI:
             [662, 110, 1],
         ])"""
 
-        deformed_points = np.matrix([
-            [404, 114, 1],
-            [386, 302, 1],
-            [421, 124, 1],
-            [407, 290, 1],
-            [651, 119, 1],
-            [686, 285, 1],
-            [666, 112, 1],
-            [709, 299, 1],
+        """deformed_points = np.matrix([
+            [244, 343, 1],
+            [169, 297, 1],
+            [269, 307, 1],
+            [213, 263, 1],
+            [264, 352, 1],
+            [329, 291, 1],
+            [230, 323, 1],
+            [315, 250, 1],
         ])
 
-        """original_points = np.matrix([
-            #[0, 0],
-            #[0, 600],
-            #[800, 600],
-            #[800, 0]
-            [0, 600],
-            [0, 0],
-            [800, 0],
-            [800, 600],
 
+        deformed_points = np.matrix([
+            [172, 282, 1],
+            [169, 279, 1],
+            [215, 265, 1],
+            [212, 262, 1],
+            [231, 226, 1],
+            [239, 220, 1],
+            [269, 241, 1],
+            [274, 237, 1],
         ])"""
 
+        deformed_points = np.matrix([
+            [17, 385, 1],
+            [334, 149, 1],
+            [228, 385, 1],
+            [472, 153, 1],
+            [280, 374, 1],
+            [38, 163, 1],
+            [506, 377, 1],
+            [34, 54, 1],
+        ])
+
+
+        # TODO Uncommet
         #deformed_points = self.clicked_points_list
-
-        #original_points = np.matrix([
-        #    [0, rectangle_height],
-        #    [0, 0],
-        #    [rectangle_width, 0],
-        #    [rectangle_width, rectangle_height],
-        #
-        #])
-
-        #original_points = original_points * 0.1
 
         print(deformed_points)
         line_one = np.cross(deformed_points[0], deformed_points[1])
@@ -160,113 +148,106 @@ class ApplicationUI:
         print(projective_homography_matrix)
 
 
-        affine_homography_matrix = None
+        #affine_homography_matrix = None
+
+
+        output_image_array = self.transform(projective_homography_matrix, np.array(self.image_data))
+        self.image_data = output_image_array
+
+        output_image = Image.fromarray(output_image_array.astype('uint8'))
+        output_image.save("projective_to_affine.bmp")
+        #output_image.show()
+        print("Drawing")
+        self.draw_result(output_image, self.uptade_interface_to_step_two)
+
+
+    def transform_to_similarity(self):
+        print("Transform to Similarity")
+
+        #deformed_points = np.matrix(self.clicked_points_list)
+
+        deformed_points = np.matrix([
+            [231, 180, 1],
+            [280, 213, 1],
+            [280, 213, 1],
+            [380, 179, 1],
+            [578, 11, 1],
+            [479, 45, 1],
+            [479, 45, 1],
+            [530, 77, 1],
+        ])
+
+        print(deformed_points)
+        line_one = np.cross(deformed_points[0], deformed_points[1])
+        line_two = np.cross(deformed_points[2], deformed_points[3])
+        line_three = np.cross(deformed_points[4], deformed_points[5])
+        line_four = np.cross(deformed_points[6], deformed_points[7])
+
+        print("lines", line_one, line_two, line_three, line_four)
+
+        line_one = (line_one * (1/line_one[0, 2]))#.astype(int)
+        line_two = (line_two * (1/line_two[0, 2]))#.astype(int)
+        line_three = (line_three * (1/line_three[0, 2]))#.astype(int)
+        line_four = (line_four * (1/line_four[0, 2]))#.astype(int)
+
+        print("lines", line_one, line_two, line_three, line_four)
+
+        A = np.matrix([
+            [line_one[0, 0] * line_two[0, 0], line_one[0, 0] * line_two[0, 1] + line_one[0, 1] * line_two[0, 0], line_one[0, 1] * line_two[0, 1]],
+            [line_three[0, 0] * line_four[0, 0], line_three[0, 0] * line_four[0, 1] + line_three[0, 1] * line_four[0, 0], line_three[0, 1] * line_four[0, 1]],
+            [0, 0, 1]
+        ])
+
+        print(A)
+
+        b = np.matrix([[0,0,1]])
+
+        x = np.linalg.solve(A, b.T)
+
+        #c, low = scipy.linalg.cho_factor(A)
+        #s = scipy.linalg.cho_solve((c, low), b)
+        #print(c, low)
+        #print(s)
+
+        
+        #u, s, v = np.linalg.svd(A)
+        #c = np.dot(u.T,b.T)
+        #w = np.linalg.solve(np.diag(s),c)
+        #x = np.dot(v.T,w)
+
+        print("x: \n", x)
+
+        affine_homography_matrix = np.matrix([
+            [x[0, 0], x[1, 0], 0],
+            [x[1, 0], 1, 0],
+            [0, 0, 1]
+        ])
+
+        print(affine_homography_matrix)
+
+        output_image_array = self.transform(affine_homography_matrix, np.array(self.image_data))
+        self.image_data = output_image_array
+
+        output_image = Image.fromarray(output_image_array.astype('uint8'))
+
+        #output_image.show()
+        print("Drawing")
+        self.draw_result(output_image, None)
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        """
-
-        A = np.zeros((8, 8))
-
-        deformed_points_coordinates = np.asmatrix(deformed_points).reshape(-1)
-        original_points_coordinates = np.asmatrix(original_points).reshape(-1)
-
-        print(deformed_points_coordinates)
-        print(original_points_coordinates)
-
-        # generating A matrix
-
-        for i in range(0, len(deformed_points_coordinates.T)):
-            point_base_position = int(2 * np.floor(i / 2))
-            #print(point_base_position) 
-            #x = original_points_coordinates[0, point_base_position]
-            #y = original_points_coordinates[0, point_base_position + 1]
-            #x_line = deformed_points_coordinates[0, point_base_position]
-            #y_line = deformed_points_coordinates[0, point_base_position + 1]
-
-            x = deformed_points_coordinates[0, point_base_position]
-            y = deformed_points_coordinates[0, point_base_position + 1]
-            x_line = original_points_coordinates[0, point_base_position]
-            y_line = original_points_coordinates[0, point_base_position + 1]
-
-            if i % 2 == 0:
-                A[i] = [x, y, 1, 0, 0, 0, - x * x_line, - y * x_line]
-            else:
-                A[i] = [0, 0, 0, x, y, 1, - x * y_line, - y * y_line]
-
-        #h_values = np.linalg.solve(A, original_points_coordinates.T) # calculates x = A^-1 * b
-
-        h_values = np.linalg.inv(A) * original_points_coordinates.T
-
-        #h_values = np.linalg.inv(A.T * A) * A.T * original_points_coordinates.T # using the pseudo inverse
-
-        #print(h_values)
-
-        h_values = np.append(h_values, np.matrix([[1]]), axis=0) # Adding h33
-
-        #print(h_values)
-
-        homography_matrix = np.reshape(h_values, (3, 3))
-
+    def transform(self, homography, deformed_image_array):
+        homography_matrix = homography
         homography_matrix_inverse = np.linalg.inv(homography_matrix)
 
-        #print(homography_matrix)
+        deformed_image_width = deformed_image_array.shape[1]
+        deformed_image_height = deformed_image_array.shape[0]
 
-        #print(homography_matrix_inverse)
-
-
-        #"""
-
-        """op = np.matrix([[original_points[0, 0], original_points[0, 1], 1]])
-        transformed_point = homography_matrix_inverse * op.T
-        print(op)
-        print(transformed_point)
-        print(int(transformed_point[0,0]/transformed_point[2,0]), int(transformed_point[1,0]/transformed_point[2,0]))
-
-        print("\n")
-
-        dp = np.matrix([[deformed_points[0, 0], deformed_points[0, 1], 1]])
-        #print(dp, homography_matrix * dp.T)
-        transformed_point = homography_matrix * dp.T
-        print(dp)
-        print(transformed_point)
-        print(int(transformed_point[0,0]/transformed_point[2,0]), int(transformed_point[1,0]/transformed_point[2,0]))
-
-        #"""
-
-        #homography_matrix = affine_homography_matrix * projective_homography_matrix
-        
-        #homography_matrix = np.linalg.inv(projective_homography_matrix)
-        #homography_matrix_inverse = projective_homography_matrix
-        homography_matrix = projective_homography_matrix
-        homography_matrix_inverse = np.linalg.inv(projective_homography_matrix)
+        print(deformed_image_array.shape, deformed_image_width, deformed_image_height)
+        print(deformed_image_array[0])
+        print(deformed_image_array[0][0])
 
         # Defining points of interest
         deformed_x_min = 0
@@ -363,10 +344,27 @@ class ApplicationUI:
         #print(output_image_array[0][0])
         print(output_image_array.shape)
 
-        output_image = Image.fromarray(output_image_array.astype('uint8'))
-        #output_image.show()
+        return output_image_array
 
-        self.draw_result(output_image)
+
+    def uptade_interface_to_step_two(self):
+        print("Updating Interface")
+
+        self.current_step = 2
+
+        self.transform_button["text"] = "Go To Step 3"
+        self.transform_button["command"] = self.transform_to_similarity
+        #self.transform_button.pack()
+
+        self.instructions_label["text"] = "Select two 90 degree angles"
+        #self.instructions_label.pack()
+
+        # Reset self.clicked_points_list
+        self.clicked_points_list = []
+
+        self.run()
+
+
 
     def select_image(self):
         self.image_file_name = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("jpeg files","*.jpg"), ("all files","*.*"))) 
@@ -390,8 +388,12 @@ class ApplicationUI:
         y = event.y
         r = 10 # radius
 
-        # TODO Change the else condition value
-        maximun_points = 8 if self.current_step == 1 else 0
+        if self.current_step == 1:
+            maximun_points = 8
+        elif self.current_step == 2:
+            maximun_points = 6
+        else:
+            maximun_points = 0
 
         if len(self.clicked_points_list) < maximun_points:
             self.image_canvas.create_oval(x-r, y-r, x+r, y+r, width=3, outline="#fb0")
@@ -404,7 +406,7 @@ class ApplicationUI:
     def calculate_homography(self):
         pass
 
-    def draw_result(self, output_image):       
+    def draw_result(self, output_image, update_interface):       
         for widget in self.image_frame.winfo_children():
             widget.destroy()
 
@@ -417,6 +419,10 @@ class ApplicationUI:
         self.image_canvas.create_image(self.image_data.size[0]//2, self.image_data.size[1]//2, image=image_tk)
 
         self.image_canvas.bind("<Button-1>", self.get_click_position)
+
+        if update_interface != None:
+            print("Updating")
+            update_interface()
 
         self.run()
 
