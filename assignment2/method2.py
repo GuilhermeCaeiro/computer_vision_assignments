@@ -160,6 +160,7 @@ class ApplicationUI:
         print("KK.T * v matrix: \n", KK_T_v)
 
         v = np.linalg.inv(KK_T) * KK_T_v
+        #v = np.linalg.lstsq(KK_T, KK_T_v)[0]
 
         print("v matrix: \n", v)
 
