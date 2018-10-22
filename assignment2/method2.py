@@ -94,21 +94,6 @@ class ApplicationUI:
         # TODO Uncommet
         #deformed_points = self.clicked_points_list
 
-        """print(deformed_points)
-        line_one = np.cross(deformed_points[0], deformed_points[1])
-        line_two = np.cross(deformed_points[2], deformed_points[3])
-        line_three = np.cross(deformed_points[4], deformed_points[5])
-        line_four = np.cross(deformed_points[6], deformed_points[7])
-
-        print("lines", line_one, line_two, line_three, line_four)
-
-        line_one = (line_one * (1/line_one[0, 2]))#.astype(int)
-        line_two = (line_two * (1/line_two[0, 2]))#.astype(int)
-        line_three = (line_three * (1/line_three[0, 2]))#.astype(int)
-        line_four = (line_four * (1/line_four[0, 2]))#.astype(int)
-
-        print("lines", line_one, line_two, line_three, line_four)"""
-
         lines = []
 
         for i in range(0, 20, 2):
@@ -121,7 +106,7 @@ class ApplicationUI:
 
             lines.append(line)
 
-        print(lines)
+        print("Lines: \n", lines)
 
         system_of_equations = []
         #b = []
@@ -143,14 +128,14 @@ class ApplicationUI:
 
         system_of_equations.append([0, 0, 0, 0, 0, 1]) # last number is 1 to force f = 1
 
-        print(system_of_equations)
+        print("System of equations: \n", system_of_equations)
 
         b = np.matrix([[0, 0, 0, 0, 0, 1]]) # last number is 1 to force f = 1
         #b = np.matrix([b])
 
         x = np.linalg.inv(system_of_equations) * b.T
 
-        print("x: ", x)
+        print("x: \n", x)
 
         conic = np.matrix([
             [x[0, 0], x[1, 0] / 2, x[3, 0] / 2],
@@ -158,24 +143,57 @@ class ApplicationUI:
             [x[3, 0] / 2, x[4, 0] / 2, 1.0]
         ])
 
-        projective_homography = None
+        print("Conic matrix: \n", conic)
 
-        print(projective_homography)
+        KK_T = np.matrix([
+            [x[0, 0], x[1, 0] / 2],
+            [x[1, 0] / 2, x[2, 0]],
+        ])
 
-        affine_homography = None
+        print("KK.T matrix: \n", KK_T)
 
-        print(affine_homography)
+        KK_T_v = np.matrix([
+            [x[3, 0] / 2],
+            [x[4, 0] / 2],
+        ])
+
+        print("KK.T * v matrix: \n", KK_T_v)
+
+        v = np.linalg.inv(KK_T) * KK_T_v
+
+        print("v matrix: \n", v)
+
+        K = scipy.linalg.cholesky(KK_T, lower = True)
+
+        print("K matrix: \n", K)
+
+
+        projective_homography = np.matrix([
+            [1, 0, 0],
+            [0, 1, 0],
+            [v[0, 0], v[1, 0], 1],
+        ])
+
+        print("Projective homography: \n", projective_homography)
+
+        affine_homography = np.matrix([
+            [K[0, 0], K[0, 1], 0],
+            [K[1, 0], K[1, 1], 0],
+            [0, 0, 1],
+        ])
+
+        print("Affine homography: \n", affine_homography)
 
         # matrix to transform from projective space to similarity ()
-        projective_to_similarity_homography_matrix = affine_homography * projective_homography
+        projective_to_similarity_homography_matrix =  affine_homography * projective_homography 
 
-        print(projective_to_similarity_homography_matrix)
+        print("Projective to Similarity Homography: \n", projective_to_similarity_homography_matrix)
 
         output_image_array = self.transform(projective_to_similarity_homography_matrix, np.array(self.image_data))
         self.image_data = output_image_array
 
         output_image = Image.fromarray(output_image_array.astype('uint8'))
-        output_image.save("projective_to_affine.bmp")
+        output_image.save("projective_to_similarity.bmp")
         #output_image.show()
         print("Drawing")
         self.draw_result(output_image)
@@ -318,7 +336,7 @@ class ApplicationUI:
         r = 10 # radius
 
         if self.current_step == 1:
-            maximun_points = 8
+            maximun_points = 20
         elif self.current_step == 2:
             maximun_points = 6
         else:

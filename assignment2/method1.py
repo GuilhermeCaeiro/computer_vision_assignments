@@ -217,11 +217,28 @@ class ApplicationUI:
 
         print("x: \n", x)
 
+        KK_T = np.matrix([
+            [x[0, 0], x[1, 0]],
+            [x[1, 0], 1.0]
+        ])
+
+        print("KK.T matrix: \n", KK_T)
+
+        K = scipy.linalg.cholesky(KK_T, lower = False)
+
+        print("K matrix: \n", K)
+
         affine_homography_matrix = np.matrix([
-            [x[0, 0], x[1, 0], 0],
-            [x[1, 0], 1, 0],
+            [K[0, 0], K[0, 1], 0],
+            [K[1, 0], K[1, 1], 0],
             [0, 0, 1]
         ])
+
+        """affine_homography_matrix = np.matrix([
+            [x[0, 0], x[1, 0], 0],
+            [0, 1.0, 0],
+            [0, 0, 1]
+        ])"""
 
         print(affine_homography_matrix)
 
