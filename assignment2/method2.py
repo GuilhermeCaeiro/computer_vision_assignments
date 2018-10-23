@@ -164,7 +164,7 @@ class ApplicationUI:
 
         print("v matrix: \n", v)
 
-        K = scipy.linalg.cholesky(KK_T, lower = True)
+        K = scipy.linalg.cholesky(KK_T, lower = False)
 
         print("K matrix: \n", K)
 
@@ -186,7 +186,7 @@ class ApplicationUI:
         print("Affine homography: \n", affine_homography)
 
         # matrix to transform from projective space to similarity ()
-        projective_to_similarity_homography_matrix =  affine_homography * projective_homography 
+        projective_to_similarity_homography_matrix =  projective_homography * affine_homography  
 
         print("Projective to Similarity Homography: \n", projective_to_similarity_homography_matrix)
 
