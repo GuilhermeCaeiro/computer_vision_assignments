@@ -45,13 +45,17 @@ for i in range(len(files) - 1):
     img1 = imutils.resize(img1, width=400)
     img2 = imutils.resize(img2, width=400)
 
-    gray = cv2.cvtColor(img1,cv2.COLOR_BGR2GRAY)
-    gray = np.float32(gray)
-    dst1 = cv2.cornerHarris(gray, 2, 3, 0.04)
+    temp = img1
+    img1 = img2
+    img2 = temp
 
-    gray = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
-    gray = np.float32(gray)
-    dst2 = cv2.cornerHarris(gray, 2, 3, 0.04)
+    #gray = cv2.cvtColor(img1,cv2.COLOR_BGR2GRAY)
+    #gray = np.float32(gray)
+    #dst1 = cv2.cornerHarris(gray, 2, 3, 0.04)
+
+    #gray = cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY)
+    #gray = np.float32(gray)
+    #dst2 = cv2.cornerHarris(gray, 2, 3, 0.04)
 
     # detect and extract features from the image
     orb = cv2.ORB_create()
@@ -106,7 +110,7 @@ for i in range(len(files) - 1):
     result = cv2.warpPerspective(img1, homography, (img1.shape[1] + img2.shape[1], img1.shape[0]))
     result[0:img2.shape[0], 0:img2.shape[1]] = img2
 
-    vis = drawMatches(img1, img2, img1_points, img2_points, matches, status)
+    #vis = drawMatches(img1, img2, img1_points, img2_points, matches, status)
 
     cv2.imshow("Image " + str(i), img1)
     cv2.imshow("Image " + str(i + 1), img2)
