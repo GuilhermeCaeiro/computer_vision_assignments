@@ -31,13 +31,13 @@ def drawMatches(img1, img2, img1_points, img2_points, matches, status):
     # return the visualization
     return vis
 
-files = ["img1.png", "img2.png"]
+files = ["m_img1.png", "m_img2.png", "m_img3.png"]
 base_image = None
 
 for i in range(len(files) - 1):
     img1 = base_image
 
-    if img1 == None:
+    if img1 is None:
         img1 = cv2.imread(files[i])
 
     img2 = cv2.imread(files[i + 1])
@@ -111,6 +111,8 @@ for i in range(len(files) - 1):
     result[0:img2.shape[0], 0:img2.shape[1]] = img2
 
     #vis = drawMatches(img1, img2, img1_points, img2_points, matches, status)
+
+    base_image = result
 
     cv2.imshow("Image " + str(i), img1)
     cv2.imshow("Image " + str(i + 1), img2)
