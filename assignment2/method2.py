@@ -315,7 +315,7 @@ class ApplicationUI:
 
 
     def select_image(self):
-        self.image_file_name = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("jpeg files","*.jpg"), ("all files","*.*"))) 
+        self.image_file_name = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("image files","*.jpg;*.png"), ("all files","*.*"))) 
         self.image_data = Image.open(self.image_file_name)
 
         self.image_canvas = tkinter.Canvas(self.image_frame, width=self.image_data.size[0], height=self.image_data.size[1])

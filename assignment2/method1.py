@@ -152,7 +152,10 @@ class ApplicationUI:
 
 
         output_image_array = self.transform(projective_homography_matrix, np.array(self.image_data))
-        self.image_data = output_image_array
+
+        #output_image_array = output_image_array.T
+
+        self.image_data = output_image_array#.T
 
         output_image = Image.fromarray(output_image_array.astype('uint8'))
         output_image.save("projective_to_affine.bmp")
@@ -175,6 +178,22 @@ class ApplicationUI:
             [479, 45, 1],
             [479, 45, 1],
             [530, 77, 1],
+        ])
+
+        deformed_points = np.matrix([
+            [288, 210, 1],
+            [625, 95, 1],
+            [356, 66, 1],
+            [557, 192, 1],
+            #[431, 79, 1],
+            #[632, 76, 1],
+            #[632, 76, 1],
+            #[581, 144, 1],
+
+            [584, 13, 1],
+            [719, 98, 1],
+            [643, 39, 1],
+            [338, 143, 1],
         ])
 
         print(deformed_points)
@@ -384,7 +403,7 @@ class ApplicationUI:
 
 
     def select_image(self):
-        self.image_file_name = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("jpeg files","*.jpg"), ("all files","*.*"))) 
+        self.image_file_name = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("image files","*.jpg;*.png"), ("all files","*.*"))) 
         self.image_data = Image.open(self.image_file_name)
 
         self.image_canvas = tkinter.Canvas(self.image_frame, width=self.image_data.size[0], height=self.image_data.size[1])
