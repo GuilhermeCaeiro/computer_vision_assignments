@@ -245,7 +245,7 @@ def transform(homography, base_image, second_image):
 
 
 #files = ["m_img1.png", "m_img2.png"]#, "m_img3.png"]
-files = ["alcimg1.png", "alcimg2.png", "alcimg3.png"]#, "alcimg4.png"]#, "alcimg5.png", "alcimg6.png", "alcimg7.png",]
+files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png"]#, "alcimg5.png", "alcimg6.png", "alcimg7.png",]
 
 base_image = None
 
@@ -257,10 +257,9 @@ for i in range(len(files) - 2, -1, -1):
     if img1 is None:
         print("No base image found. Using LAST image in the files' array.")
         img1 = cv2.imread(files[i + 1])
+        img1 = imutils.resize(img1, width=400)
 
     img2 = cv2.imread(files[i])
-
-    img1 = imutils.resize(img1, width=400)
     img2 = imutils.resize(img2, width=400)
 
     #temp = img1
@@ -325,13 +324,13 @@ for i in range(len(files) - 2, -1, -1):
     print(homography)
     #print(status)
 
-    result = cv2.warpPerspective(img1, homography, (img1.shape[1] + img2.shape[1], img1.shape[0]))
+    #result = cv2.warpPerspective(img1, homography, (img1.shape[1] + img2.shape[1], img1.shape[0]))
     #cv2.imwrite("result-p1.jpg", result)
-    result[0:img2.shape[0], 0:img2.shape[1]] = img2
+    #result[0:img2.shape[0], 0:img2.shape[1]] = img2
     #cv2.imwrite("result-p2.jpg", result)
 
-    output_image_array = transform(homography, img1, img2)
-    cv2.imshow("Base Image", output_image_array.astype('uint8'))
+    result = transform(homography, img1, img2).astype('uint8')
+    cv2.imshow("Base Image", result)
     #output_image_array = transform(homography, img2, output_image_array)
     #cv2.imshow("img2", output_image_array)
 
