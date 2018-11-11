@@ -32,7 +32,7 @@ def drawMatches(img1, img2, img1_points, img2_points, matches, status):
     return vis
 
 
-def transform(homography, deformed_image_array, output_image_array = None):
+"""def transform(homography, deformed_image_array, output_image_array = None):
     homography_matrix = homography
     homography_matrix_inverse = np.linalg.inv(homography_matrix)
 
@@ -138,38 +138,134 @@ def transform(homography, deformed_image_array, output_image_array = None):
     #print(output_image_array[0][0])
     print(output_image_array.shape)
 
-    return output_image_array
+    return output_image_array"""
 
 
 
 
+def transform(homography, base_image, second_image):
+    base_image_width = base_image.shape[1]
+    base_image_height = base_image.shape[0]
+
+    second_image_width = second_image.shape[1]
+    second_image_height = second_image.shape[0]
+
+    homography_inverse = np.linalg.inv(homography)
+
+    
+
+
+    # get the mapping for the second image's corners on the base image's (reference) plane
+    second_image_top_left = homography_inverse * np.matrix([[0, 0, 1]]).T
+    second_image_bottom_left = homography_inverse * np.matrix([[0, second_image_height, 1]]).T
+    second_image_bottom_right = homography_inverse * np.matrix([[second_image_width, second_image_height, 1]]).T
+    second_image_top_right = homography_inverse * np.matrix([[second_image_width, 0, 1]]).T
+
+    print("Corners", second_image_top_left, second_image_bottom_left, second_image_bottom_right, second_image_top_right)
+
+    #(line_one * (1/line_one[0, 2]))
+    print("dividing by x3")
+    second_image_top_left = second_image_top_left * (1 / second_image_top_left[2, 0])
+    second_image_bottom_left = second_image_bottom_left * (1 / second_image_bottom_left[2, 0])
+    second_image_bottom_right = second_image_bottom_right * (1 / second_image_bottom_right[2, 0])
+    second_image_top_right = second_image_top_right * (1 / second_image_top_right[2, 0])
+
+    print("Corners", second_image_top_left, second_image_bottom_left, second_image_bottom_right, second_image_top_right)
+
+    min_x = min(second_image_top_left[0, 0], second_image_bottom_left[0, 0])
+    min_y = min(second_image_top_left[1, 0], second_image_top_right[1, 0])
+    max_x = max(second_image_top_right[0, 0], second_image_bottom_right[0, 0])
+    max_y = max(second_image_bottom_left[1, 0], second_image_bottom_right[1, 0])
+
+    print("Mins and maxes", min_x, min_y, max_x, max_y)
+
+    x_left_displacement = (0 - min_x) if min_x < 0 else 0 
+    x_right_displacement = (max_x - base_image_width) if max_x > base_image_width else 0 
+    y_top_displacement = (0 - min_y) if min_y < 0 else 0
+    y_bottom_displacement = (max_y - base_image_height) if max_y > base_image_height else 0
+
+    print("Displacements", x_left_displacement, x_right_displacement, y_top_displacement, y_bottom_displacement)
+
+    new_base_image_width = base_image_width + x_left_displacement + x_right_displacement
+    new_base_image_height = base_image_height + y_top_displacement + y_bottom_displacement
+
+    print("New image size", new_base_image_width, new_base_image_height)
+
+    # with the reference corners for the two images, write each pixel of the base 
+    # image in a new image, that comprises all the corners of the two images,
+    # and then write the second image in that plane, mapping each of its pixels
+
+    new_base_image_matrix = np.zeros((new_base_image_height, new_base_image_width, 3), dtype=np.int)
+
+    for x in range(0, base_image_width):
+        for y in range(0, base_image_height):
+            target_row = int(y_top_displacement + y)
+            target_column = int(x_left_displacement + x)
+            try:
+                new_base_image_matrix[target_row, target_column] = base_image[y, x] 
+            except:
+                pass
+            #print(x, y, target_column, target_row, base_image[y, x])
+
+    for x in range(0, second_image_width):
+        for y in range(0, second_image_height):
+            mapping = homography_inverse * np.matrix([[x, y, 1]]).T
+            
+            # the mapping coordinate is then adjusted and the value of the current pois is written
+            mapping = mapping * (1 / mapping[2, 0])
+            try: 
+                new_base_image_matrix[y_top_displacement + mapping[1, 0], x_left_displacement + mapping[0, 0]] = second_image[y, x]
+                #new_base_image_matrix[mapping[1, 0], mapping[0, 0]] = second_image[y, x]
+            except:
+                pass
+    #print(new_base_image_matrix)
+    return new_base_image_matrix
+            
+    """
+    output_width = 768
+    output_height = int((new_base_image_height / new_base_image_width) * output_width)
+
+    for x in range(0, output_width):
+        for y in range(0, output_height):
+            deformed_point = homography_matrix_inverse * np.matrix([[x_min + int(x * step_x), y_min + int(y * step_y), 1]]).T
+
+            try:
+                unscaled_deformed_point = [int(deformed_point[0,0] / deformed_point[2,0]), int(deformed_point[1,0] / deformed_point[2,0])]
+
+                if((unscaled_deformed_point[0] < 0 or unscaled_deformed_point[0] >= deformed_image_width) or (unscaled_deformed_point[1] < 0 or unscaled_deformed_point[1] >= deformed_image_height)):
+                    continue
+
+                output_image_array[y, x] = deformed_image_array[unscaled_deformed_point[1], unscaled_deformed_point[0]]
+                
+            except:
+                pass#print("error")
+    """
 
 
 
 
-
-files = ["m_img1.png", "m_img2.png", "m_img3.png"]
-#files = ["alcimg1.png", "alcimg2.png", "alcimg3.png"]#, "alcimg4.png"]#, "alcimg5.png", "alcimg6.png", "alcimg7.png",]
+#files = ["m_img1.png", "m_img2.png"]#, "m_img3.png"]
+files = ["alcimg1.png", "alcimg2.png", "alcimg3.png"]#, "alcimg4.png"]#, "alcimg5.png", "alcimg6.png", "alcimg7.png",]
 
 base_image = None
 
-for i in range(len(files) - 1):
-    print("Stitching images " + str(i + 1) + " and " + str(i + 2))
+for i in range(len(files) - 2, -1, -1):
+    print("Stitching images " + str(i) + " and " + str(i + 1))
 
     img1 = base_image
 
     if img1 is None:
-        print("No base image found. Using first image in the files array.")
-        img1 = cv2.imread(files[i])
+        print("No base image found. Using LAST image in the files' array.")
+        img1 = cv2.imread(files[i + 1])
 
-    img2 = cv2.imread(files[i + 1])
+    img2 = cv2.imread(files[i])
 
     img1 = imutils.resize(img1, width=400)
     img2 = imutils.resize(img2, width=400)
 
-    temp = img1
-    img1 = img2
-    img2 = temp
+    #temp = img1
+    #img1 = img2
+    #img2 = temp
 
     #gray = cv2.cvtColor(img1,cv2.COLOR_BGR2GRAY)
     #gray = np.float32(gray)
@@ -229,13 +325,13 @@ for i in range(len(files) - 1):
     print(homography)
     #print(status)
 
-    result = cv2.warpPerspective(img2, homography, (img1.shape[1] + img2.shape[1], img1.shape[0]))
-    cv2.imwrite("result-p1.jpg", result)
-    result[0:img1.shape[0], 0:img1.shape[1]] = img1
-    cv2.imwrite("result-p2.jpg", result)
+    result = cv2.warpPerspective(img1, homography, (img1.shape[1] + img2.shape[1], img1.shape[0]))
+    #cv2.imwrite("result-p1.jpg", result)
+    result[0:img2.shape[0], 0:img2.shape[1]] = img2
+    #cv2.imwrite("result-p2.jpg", result)
 
-    #output_image_array = transform(homography, img1, None)
-    #cv2.imshow("img1", output_image_array)
+    output_image_array = transform(homography, img1, img2)
+    cv2.imshow("Base Image", output_image_array.astype('uint8'))
     #output_image_array = transform(homography, img2, output_image_array)
     #cv2.imshow("img2", output_image_array)
 
@@ -244,10 +340,10 @@ for i in range(len(files) - 1):
 
     base_image = result
 
-    cv2.imshow("Image " + str(i), img1)
-    cv2.imshow("Image " + str(i + 1), img2)
-    #cv2.imshow("Keypoint Matches", vis)
-    cv2.imshow("Result", result)
+    #cv2.imshow("Image " + str(i), img1)
+    #cv2.imshow("Image " + str(i + 1), img2)
+    ##cv2.imshow("Keypoint Matches", vis)
+    #cv2.imshow("Result", result)
     cv2.waitKey(0)
 
 
