@@ -32,115 +32,6 @@ def drawMatches(img1, img2, img1_points, img2_points, matches, status):
     return vis
 
 
-"""def transform(homography, deformed_image_array, output_image_array = None):
-    homography_matrix = homography
-    homography_matrix_inverse = np.linalg.inv(homography_matrix)
-
-    deformed_image_width = deformed_image_array.shape[1]
-    deformed_image_height = deformed_image_array.shape[0]
-
-    print(deformed_image_array.shape, deformed_image_width, deformed_image_height)
-    print(deformed_image_array[0])
-    print(deformed_image_array[0][0])
-
-    # Defining points of interest
-    deformed_x_min = 0
-    deformed_x_max = deformed_image_width
-    deformed_y_min = 0
-    deformed_y_max = deformed_image_height
-
-    pre_corner0 = homography_matrix * np.matrix([[deformed_x_min, deformed_y_min, 1]]).T
-    pre_corner1 = homography_matrix * np.matrix([[deformed_x_min, deformed_y_max, 1]]).T
-    pre_corner2 = homography_matrix * np.matrix([[deformed_x_max, deformed_y_max, 1]]).T
-    pre_corner3 = homography_matrix * np.matrix([[deformed_x_max, deformed_y_min, 1]]).T
-
-    print("pre", pre_corner0, pre_corner1, pre_corner2, pre_corner3)
-
-    pre_corner0 = np.matrix([[int(pre_corner0[0,0] / pre_corner0[2,0]), int(pre_corner0[1,0] / pre_corner0[2,0]), int(pre_corner0[2,0] / pre_corner0[2,0])]]).T
-    pre_corner1 = np.matrix([[int(pre_corner1[0,0] / pre_corner1[2,0]), int(pre_corner1[1,0] / pre_corner1[2,0]), int(pre_corner1[2,0] / pre_corner1[2,0])]]).T
-    pre_corner2 = np.matrix([[int(pre_corner2[0,0] / pre_corner2[2,0]), int(pre_corner2[1,0] / pre_corner2[2,0]), int(pre_corner2[2,0] / pre_corner2[2,0])]]).T
-    pre_corner3 = np.matrix([[int(pre_corner3[0,0] / pre_corner3[2,0]), int(pre_corner3[1,0] / pre_corner3[2,0]), int(pre_corner3[2,0] / pre_corner3[2,0])]]).T
-
-    #pre_corner0 = pre_corner0.astype(int)
-    #pre_corner1 = pre_corner1.astype(int)
-    #pre_corner2 = pre_corner2.astype(int)
-    #pre_corner3 = pre_corner3.astype(int)
-
-    print("pre", pre_corner0, pre_corner1, pre_corner2, pre_corner3)
-
-    pre_corners = [pre_corner0, pre_corner1, pre_corner2, pre_corner3]
-
-    x_min = math.inf
-    y_min = math.inf
-    x_max = - math.inf
-    y_max = - math.inf
-
-    for pre_corner in pre_corners:
-        if pre_corner[0, 0] < x_min:
-            x_min = pre_corner[0, 0]
-
-        if pre_corner[0, 0] > x_max:
-            x_max = pre_corner[0, 0]
-
-        if pre_corner[1, 0] < y_min:
-            y_min = pre_corner[1, 0]
-
-        if pre_corner[1, 0] > y_max:
-            y_max = pre_corner[1, 0]
-
-    print("mins", x_min, y_min, x_max, y_max)
-
-    total_x = x_max - x_min
-    total_y = y_max - y_min
-
-    print("totals", total_x, total_y, total_y/total_x)
-
-    # output
-    output_width = 768
-    output_height = int((total_y/total_x) * output_width)
-
-    #output_width = int(total_x)
-    #output_height = int(total_y)
-
-    #print("dims", output_width, output_height)
-
-    step_x = total_x / output_width
-    step_y = total_y / output_height
-
-    #print("step sizes", step_x, step_y)
-    if output_image_array is None:
-        output_image_array = np.zeros((output_height, output_width, 3), dtype=np.int)
-
-    #print(type(output_image_array))
-    print(output_image_array.shape)
-
-    print("border points", x_min, y_min)
-    print(homography_matrix_inverse * np.matrix([[x_min, y_min, 1]]).T)
-    #print("\n")
-
-    for x in range(0, output_width):
-        for y in range(0, output_height):
-            deformed_point = homography_matrix_inverse * np.matrix([[x_min + int(x * step_x), y_min + int(y * step_y), 1]]).T
-
-            try:
-                unscaled_deformed_point = [int(deformed_point[0,0] / deformed_point[2,0]), int(deformed_point[1,0] / deformed_point[2,0])]
-
-                if((unscaled_deformed_point[0] < 0 or unscaled_deformed_point[0] >= deformed_image_width) or (unscaled_deformed_point[1] < 0 or unscaled_deformed_point[1] >= deformed_image_height)):
-                    continue
-
-                output_image_array[y, x] = deformed_image_array[unscaled_deformed_point[1], unscaled_deformed_point[0]]
-                
-            except:
-                pass#print("error")
-
-
-    #print(output_image_array[0])
-    #print(output_image_array[0][0])
-    print(output_image_array.shape)
-
-    return output_image_array"""
-
-
 
 
 def transform(homography, base_image, second_image):
@@ -184,6 +75,13 @@ def transform(homography, base_image, second_image):
     y_top_displacement = (0 - min_y) if min_y < 0 else 0
     y_bottom_displacement = (max_y - base_image_height) if max_y > base_image_height else 0
 
+    """displacements = {
+        "x_left_displacement": x_left_displacement,
+        "x_right_displacement": x_right_displacement,
+        "y_top_displacement": y_top_displacement,
+        "y_bottom_displacement": y_bottom_displacement
+    }"""
+
     print("Displacements", x_left_displacement, x_right_displacement, y_top_displacement, y_bottom_displacement)
 
     new_base_image_width = base_image_width + x_left_displacement + x_right_displacement
@@ -212,40 +110,25 @@ def transform(homography, base_image, second_image):
             mapping = homography_inverse * np.matrix([[x, y, 1]]).T
             
             # the mapping coordinate is then adjusted and the value of the current pois is written
-            mapping = mapping * (1 / mapping[2, 0])
+            #mapping = mapping * (1 / mapping[2, 0])
             try: 
-                new_base_image_matrix[y_top_displacement + mapping[1, 0], x_left_displacement + mapping[0, 0]] = second_image[y, x]
-                #new_base_image_matrix[mapping[1, 0], mapping[0, 0]] = second_image[y, x]
+                if list(new_base_image_matrix[y_top_displacement + mapping[1, 0], x_left_displacement + mapping[0, 0]]) == [0, 0, 0]:
+                    new_base_image_matrix[y_top_displacement + mapping[1, 0], x_left_displacement + mapping[0, 0]] = second_image[y, x]
+                #new_base_image_matrix[y_top_displacement + mapping[1, 0], x_left_displacement + mapping[0, 0]] = second_image[y, x]
             except:
                 pass
     #print(new_base_image_matrix)
     return new_base_image_matrix
             
-    """
-    output_width = 768
-    output_height = int((new_base_image_height / new_base_image_width) * output_width)
-
-    for x in range(0, output_width):
-        for y in range(0, output_height):
-            deformed_point = homography_matrix_inverse * np.matrix([[x_min + int(x * step_x), y_min + int(y * step_y), 1]]).T
-
-            try:
-                unscaled_deformed_point = [int(deformed_point[0,0] / deformed_point[2,0]), int(deformed_point[1,0] / deformed_point[2,0])]
-
-                if((unscaled_deformed_point[0] < 0 or unscaled_deformed_point[0] >= deformed_image_width) or (unscaled_deformed_point[1] < 0 or unscaled_deformed_point[1] >= deformed_image_height)):
-                    continue
-
-                output_image_array[y, x] = deformed_image_array[unscaled_deformed_point[1], unscaled_deformed_point[0]]
-                
-            except:
-                pass#print("error")
-    """
+#def is_in_bounds(point, x_left_displacement, x_right_displacement, y_top_displacement, y_bottom_displacement):
+#    if (x_left_displacement + point[0, 0]) >= x_left_displacement and (y_top_displacement + mapping[1, 0]) >= y_top_displacement and 
+#    return 
 
 
-
-
-#files = ["m_img1.png", "m_img2.png"]#, "m_img3.png"]
-files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png"]#, "alcimg5.png", "alcimg6.png", "alcimg7.png",]
+#files = ["m_img1.png", "m_img2.png", "m_img3.png"]
+#files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png"]#, "alcimg5.png", "alcimg6.png", "alcimg7.png",]
+files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png", "alcimg5.png", "alcimg6.png", "alcimg7.png",]
+#files = ["P_20181111_023936.jpg", "P_20181111_023940.jpg", "P_20181111_023943.jpg", "P_20181111_023946.jpg", "P_20181111_023950.jpg", "P_20181111_023954.jpg", "P_20181111_023956.jpg"]
 
 base_image = None
 
