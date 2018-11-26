@@ -166,6 +166,8 @@ matching_image_with_lines = draw_lines(matching_image, image1_inlier_keypoints, 
 
 
 retval, R, t, mask, triangulatedPoints = cv2.recoverPose(E, image1_points, image2_points, cameraMatrix = K, distanceThresh = 1.0, mask = masks)
+#retval, R, t, mask, triangulatedPoints = cv2.recoverPose(E, image1_points, image2_points, cameraMatrix = K, distanceThresh = 1.0)
+#retval, R, t, mask, triangulatedPoints = cv2.recoverPose(E, image1_inlier_keypoints, image2_inlier_keypoints, cameraMatrix = K, distanceThresh = 1.0)
 print("\n\n\n")
 print(retval) 
 print(R)
