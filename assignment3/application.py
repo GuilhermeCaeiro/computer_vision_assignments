@@ -10,26 +10,44 @@ import imutils
 
 # Based on https://www.pyimagesearch.com/2016/01/11/opencv-panorama-stitching/
 
-def drawMatches(img1, img2, img1_points, img2_points, matches, status):
-    # initialize the output visualization image
-    (img1_height, img1_width) = img1.shape[:2]
-    (img2_height, img2_width) = img2.shape[:2]
-    vis = np.zeros((max(img1_height, img2_height), img1_width + img2_width, 3), dtype="uint8")
-    vis[0:img1_height, 0:img1_width] = img1
-    vis[0:img2_height, img1_width:] = img2
+def draw_points(image, keypoins, matches):
+    if len(keypoins) > 0:
+        for keypoint in keypoins:
+            #print(keypoint)
+            cv2.circle(image, tuple(keypoint), 2, (0,0,255), -1)
+    
+    if len(matches) > 0:
+        for match in matches:
+            cv2.circle(image, tuple(match), 2, (0,255,255), -1)
 
-    # loop over the matches
-    for ((trainIdx, queryIdx), s) in zip(matches, status):
-        # only process the match if the keypoint was successfully
-        # matched
-        if s == 1:
-            # draw the match
-            ptA = (int(img1_points[queryIdx][0]), int(img1_points[queryIdx][1]))
-            ptB = (int(img2_points[trainIdx][0]) + img1_width, int(img2_points[trainIdx][1]))
-            cv2.line(vis, ptA, ptB, (0, 255, 0), 1)
+    return image
 
-    # return the visualization
-    return vis
+def generate_matching_image(image1, image2, matches):
+    matching_image = np.zeros((max(image1.shape[0], image2.shape[0]), image1.shape[1] + image2.shape[1], image1.shape[2]), dtype="uint8")
+    print(matching_image.shape)
+    print(image1.shape, image2.shape)
+
+    matching_image[0:image1.shape[0], 0:image1.shape[1]] = image1
+    matching_image[0:image2.shape[0], image1.shape[1]:] = image2
+
+    print(matching_image.shape)
+
+    #for match in matches:
+
+
+
+    return matching_image
+
+def draw_lines(matching_image, image1_points, image2_points, matches):
+    for point_left, point_right in zip(image1_points, image2_points): # where "order" means the order number, like 1st, 7th, etc
+        point_left = tuple([int(i) for i in point_left])
+        #point_right = tuple([int(i) for i in point_right])
+        #point_left = (int(image1_points[order_left][0]), int(image1_points[order_left][1]))
+        point_right = (int(point_right[0]) + int(matching_image.shape[1] / 2), int(point_right[1]))
+        cv2.line(matching_image, point_left, point_right, (255, 255, 0), 1)
+
+    return matching_image
+
 
 
 
@@ -162,6 +180,7 @@ for i in range(len(files) - 2, -1, -1):
     img1_kps = orb.detect(img1,None)
     img1_kps, img1_features = orb.compute(img1, img1_kps)
 
+    #print(img2.shape[1])
     #print(img1_kps, img1_features)
 
     orb = cv2.ORB_create()
@@ -219,6 +238,16 @@ for i in range(len(files) - 2, -1, -1):
 
 
     #vis = drawMatches(img1, img2, img1_points, img2_points, matches, status)
+
+    image1_with_points = draw_points(img1, img1_kps, img1_points)
+    image2_with_points = draw_points(img2, img2_kps, img2_points)
+
+    matching_image = generate_matching_image(image2_with_points, image1_with_points, matches)
+
+    matching_image_with_lines = draw_lines(matching_image, img2_points, img1_points, matches)
+
+    cv2.imshow("Matches", matching_image_with_lines)
+
 
     base_image = result
 
