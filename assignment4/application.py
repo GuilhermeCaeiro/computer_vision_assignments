@@ -8,7 +8,10 @@ import math
 import cv2
 import imutils
 import copy
+from matplotlib import pyplot
+from mpl_toolkits.mplot3d import Axes3D
 
+# Based on http://www.mathworks.com/help/vision/examples/structure-from-motion-from-two-views.html
 
 def draw_points(image, keypoins, matches):
     image = copy.deepcopy(image)
@@ -109,11 +112,29 @@ matching_image_with_lines = draw_lines(matching_image, image1_points, image2_poi
 """
 
 # Camera Matrix
-K = np.matrix([
+"""K = np.matrix([
     [(60.0 * 6000) / 23.5, 0, 2000],
     [0, (60.0 * 6000) / 15.6, 3000],
     [0, 0, 1]
+])"""
+
+"""K = np.matrix([
+    [(60.0 * 4000) / 15.6, 0, 2000],
+    [0, (60.0 * 6000) / 23.5, 3000],
+    [0, 0, 1]
+])"""
+
+K = np.matrix([
+    [(60.0 * 4000) / 23.5, 0, 2000],
+    [0, (60.0 * 6000) / 15.6, 3000],
+    [0, 0, 1]
 ])
+
+"""K = np.matrix([
+    [(60.0 * 6000) / 23.5, 0, 3000],
+    [0, (60.0 * 4000) / 15.6, 2000],
+    [0, 0, 1]
+])"""
 
 
 #F, masks = cv2.findEssentialMat(image1_points, image2_points, cv2.FM_RANSAC, ransacReprojThreshold = reprojThresh, confidence = confidence)
@@ -144,6 +165,41 @@ matching_image = generate_matching_image(image1_with_points, image2_with_points,
 matching_image_with_lines = draw_lines(matching_image, image1_inlier_keypoints, image2_inlier_keypoints, matches)
 
 
+retval, R, t, mask, triangulatedPoints = cv2.recoverPose(E, image1_points, image2_points, cameraMatrix = K, distanceThresh = 1.0, mask = masks)
+print("\n\n\n")
+print(retval) 
+print(R)
+print(t)
+print(mask)
+print(triangulatedPoints)
+
+print(len(triangulatedPoints[0]))
+
+triangulated_points = []
+
+for i in range(len(triangulatedPoints[0])):
+    if mask[i][0] == 0:
+        continue
+
+    w = triangulatedPoints[3][i]
+    a_triangulated_point = [triangulatedPoints[0][i], triangulatedPoints[1][i], triangulatedPoints[2][i], w]
+
+    #print(a_triangulated_point)
+
+    a_triangulated_point = [triangulatedPoints[0][i]/w, triangulatedPoints[1][i]/w, triangulatedPoints[2][i]/w, w/w]
+
+    #print(a_triangulated_point)
+
+    triangulated_points.append(a_triangulated_point)
+
+print(len(triangulated_points), "\n", triangulated_points)
+
+
+fig = pyplot.figure()
+ax = Axes3D(fig)
+#ax.scatter(triangulatedPoints[0], triangulatedPoints[1], triangulatedPoints[2])
+ax.scatter([i[0] for i in triangulated_points], [i[1] for i in triangulated_points], [i[2] for i in triangulated_points])
+pyplot.show()
 
 
 cv2.imshow("Image 1", image1_with_points)
