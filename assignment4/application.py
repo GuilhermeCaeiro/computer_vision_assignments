@@ -11,7 +11,7 @@ import copy
 from matplotlib import pyplot
 from mpl_toolkits.mplot3d import Axes3D
 
-# Based on http://www.mathworks.com/help/vision/examples/structure-from-motion-from-two-views.html
+# Partially based on http://www.mathworks.com/help/vision/examples/structure-from-motion-from-two-views.html
 
 def draw_points(image, keypoins, matches):
     image = copy.deepcopy(image)
@@ -138,7 +138,7 @@ K = np.matrix([
 
 
 #F, masks = cv2.findEssentialMat(image1_points, image2_points, cv2.FM_RANSAC, ransacReprojThreshold = reprojThresh, confidence = confidence)
-E, masks = cv2.findEssentialMat(image1_points, image2_points, cameraMatrix = K, method = cv2.FM_RANSAC, threshold = 1.0, prob = 0.999)
+E, masks = cv2.findEssentialMat(image1_points, image2_points, cameraMatrix = K, method = cv2.FM_RANSAC, threshold = 1.0, prob = 0.99)
 
 print(E, masks)
 

@@ -145,7 +145,7 @@ class ApplicationUI:
 
         print("Conic matrix: \n", conic)
 
-        KK_T = np.matrix([
+        """KK_T = np.matrix([
             [x[0, 0], x[1, 0] / 2],
             [x[1, 0] / 2, x[2, 0]],
         ])
@@ -185,8 +185,37 @@ class ApplicationUI:
 
         print("Affine homography: \n", affine_homography)
 
+
         # matrix to transform from projective space to similarity ()
         projective_to_similarity_homography_matrix =  projective_homography * affine_homography  
+        """
+
+        # Based on https://github.com/jimmysoda/imgrectifier/blob/master/proj2metric_circle.m
+
+        w, v = np.linalg.eig(conic)
+
+        print("Eigenvalues: \n", w)
+        print("Eigenvectors: \n", v)
+
+        v_transp = v.T
+
+        ss = np.matrix([
+            [np.sqrt(w[0]), 0, 0],
+            [0, np.sqrt(w[1]), 0],
+            [0, 0, 10]
+        ])
+
+        v_transp = ss * v_transp
+        v = v_transp
+
+        print(v)
+        #v = np.linalg.inv(v)
+        projective_to_similarity_homography_matrix = v
+
+
+
+
+        
 
         print("Projective to Similarity Homography: \n", projective_to_similarity_homography_matrix)
 

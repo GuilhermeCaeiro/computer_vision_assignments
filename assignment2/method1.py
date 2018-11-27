@@ -243,6 +243,7 @@ class ApplicationUI:
 
         print("KK.T matrix: \n", KK_T)
 
+        
         K = scipy.linalg.cholesky(KK_T, lower = False)
 
         print("K matrix: \n", K)
@@ -253,6 +254,28 @@ class ApplicationUI:
             [0, 0, 1]
         ])
 
+        """U, S, V = np.linalg.svd(KK_T)
+        
+        print("U", U)
+        print("S", S)
+        #S = np.asmatrix(S).T
+        S = np.matrix([[S[0], 0], [0, S[1]]])
+        print("S", S)
+        print("V", V)
+
+        K = U * np.sqrt(S)
+        K = K * V ###
+
+
+        print(K)
+
+        affine_homography_matrix = np.matrix([
+            [K[0, 0], K[0, 1], 0],
+            [K[1, 0], K[1, 1], 0],
+            [0, 0, 1]
+        ])"""
+
+        
         """affine_homography_matrix = np.matrix([
             [x[0, 0], x[1, 0], 0],
             [0, 1.0, 0],
@@ -260,6 +283,7 @@ class ApplicationUI:
         ])"""
 
         print(affine_homography_matrix)
+        print(affine_homography_matrix.T)
 
         output_image_array = self.transform(affine_homography_matrix, np.array(self.image_data))
         self.image_data = output_image_array
