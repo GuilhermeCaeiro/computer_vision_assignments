@@ -145,7 +145,9 @@ class ApplicationUI:
 
         print("Conic matrix: \n", conic)
 
-        """KK_T = np.matrix([
+        #"""
+
+        KK_T = np.matrix([
             [x[0, 0], x[1, 0] / 2],
             [x[1, 0] / 2, x[2, 0]],
         ])
@@ -187,9 +189,10 @@ class ApplicationUI:
 
 
         # matrix to transform from projective space to similarity ()
-        projective_to_similarity_homography_matrix =  projective_homography * affine_homography  
-        """
+        projective_to_similarity_homography_matrix = projective_homography * affine_homography  
+        #"""
 
+        """
         # Based on https://github.com/jimmysoda/imgrectifier/blob/master/proj2metric_circle.m
 
         w, v = np.linalg.eig(conic)
@@ -211,10 +214,22 @@ class ApplicationUI:
         print(v)
         #v = np.linalg.inv(v)
         projective_to_similarity_homography_matrix = v
+        #"""
 
 
 
-
+        # Draw lines. Only for debugging purposes, because the self.run will stop the execution of the remainder of this method.
+        #self.image_canvas.create_line(deformed_points[0, 0], deformed_points[0, 1], deformed_points[1, 0], deformed_points[1, 1], width=5, fill='green')
+        #self.image_canvas.create_line(deformed_points[2, 0], deformed_points[2, 1], deformed_points[3, 0], deformed_points[3, 1], width=5, fill='green')
+        #self.image_canvas.create_line(deformed_points[4, 0], deformed_points[4, 1], deformed_points[5, 0], deformed_points[5, 1], width=5, fill='blue')
+        #self.image_canvas.create_line(deformed_points[6, 0], deformed_points[6, 1], deformed_points[7, 0], deformed_points[7, 1], width=5, fill='blue')
+        #self.image_canvas.create_line(deformed_points[8, 0], deformed_points[8, 1], deformed_points[9, 0], deformed_points[9, 1], width=5, fill='red')
+        #self.image_canvas.create_line(deformed_points[10, 0], deformed_points[10, 1], deformed_points[11, 0], deformed_points[11, 1], width=5, fill='red')
+        #self.image_canvas.create_line(deformed_points[12, 0], deformed_points[12, 1], deformed_points[13, 0], deformed_points[13, 1], width=5, fill='orange')
+        #self.image_canvas.create_line(deformed_points[14, 0], deformed_points[14, 1], deformed_points[15, 0], deformed_points[15, 1], width=5, fill='orange')
+        #self.image_canvas.create_line(deformed_points[16, 0], deformed_points[16, 1], deformed_points[17, 0], deformed_points[17, 1], width=5, fill='yellow')
+        #self.image_canvas.create_line(deformed_points[18, 0], deformed_points[18, 1], deformed_points[19, 0], deformed_points[19, 1], width=5, fill='yellow')
+        #self.run()
         
 
         print("Projective to Similarity Homography: \n", projective_to_similarity_homography_matrix)

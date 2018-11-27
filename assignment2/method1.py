@@ -5,6 +5,7 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 from sys import argv
 import math
+import time
 
 
 class ApplicationUI:
@@ -157,6 +158,14 @@ class ApplicationUI:
 
         self.image_data = output_image_array#.T
 
+        # Draw lines. Only for debugging purposes, because the self.run will stop the execution of the remainder of this method.
+        #self.image_canvas.create_line(deformed_points[0, 0], deformed_points[0, 1], deformed_points[1, 0], deformed_points[1, 1], width=5, fill='green')
+        #self.image_canvas.create_line(deformed_points[2, 0], deformed_points[2, 1], deformed_points[3, 0], deformed_points[3, 1], width=5, fill='green')
+        #self.image_canvas.create_line(deformed_points[4, 0], deformed_points[4, 1], deformed_points[5, 0], deformed_points[5, 1], width=5, fill='blue')
+        #self.image_canvas.create_line(deformed_points[6, 0], deformed_points[6, 1], deformed_points[7, 0], deformed_points[7, 1], width=5, fill='blue')
+        #self.run()
+
+
         output_image = Image.fromarray(output_image_array.astype('uint8'))
         output_image.save("projective_to_affine.bmp")
         #output_image.show()
@@ -254,7 +263,9 @@ class ApplicationUI:
             [0, 0, 1]
         ])
 
-        """U, S, V = np.linalg.svd(KK_T)
+        """
+        # Based on https://github.com/AVINASH793/Affine-And-Metric-Rectification-of-Image/blob/master/Metric_rectification.m
+        U, S, V = np.linalg.svd(KK_T)
         
         print("U", U)
         print("S", S)
@@ -284,6 +295,13 @@ class ApplicationUI:
 
         print(affine_homography_matrix)
         print(affine_homography_matrix.T)
+
+        # Draw lines. Only for debugging purposes, because the self.run will stop the execution of the remainder of this method.
+        #self.image_canvas.create_line(deformed_points[0, 0], deformed_points[0, 1], deformed_points[1, 0], deformed_points[1, 1], width=5, fill='green')
+        #self.image_canvas.create_line(deformed_points[2, 0], deformed_points[2, 1], deformed_points[3, 0], deformed_points[3, 1], width=5, fill='green')
+        #self.image_canvas.create_line(deformed_points[4, 0], deformed_points[4, 1], deformed_points[5, 0], deformed_points[5, 1], width=5, fill='blue')
+        #self.image_canvas.create_line(deformed_points[6, 0], deformed_points[6, 1], deformed_points[7, 0], deformed_points[7, 1], width=5, fill='blue')
+        #self.run()
 
         output_image_array = self.transform(affine_homography_matrix, np.array(self.image_data))
         self.image_data = output_image_array
