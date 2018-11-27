@@ -147,6 +147,7 @@ def transform(homography, base_image, second_image):
 #files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png"]#, "alcimg5.png", "alcimg6.png", "alcimg7.png",]
 files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png", "alcimg5.png", "alcimg6.png", "alcimg7.png",]
 #files = ["P_20181111_023936.jpg", "P_20181111_023940.jpg", "P_20181111_023943.jpg", "P_20181111_023946.jpg", "P_20181111_023950.jpg", "P_20181111_023954.jpg", "P_20181111_023956.jpg"]
+#files = ["IMG-20181109-WA0003_1.jpg", "IMG-20181109-WA0004_2.jpg", "IMG-20181109-WA0005_3.jpg", "IMG-20181109-WA0001_4.jpg", "IMG-20181109-WA0002_5.jpg"]
 
 base_image = None
 
