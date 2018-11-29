@@ -202,8 +202,8 @@ for i in range(len(files) - 2, -1, -1):
     rawMatches = matcher.knnMatch(img1_features, img2_features, 2)
     
     matches = []
-    ratio = 0.75
-    reprojThresh = 4.0
+    ratio = 0.7
+    reprojThresh = 0.2
 
     for match in rawMatches:
         # ensure the distance is within a certain ratio of each
