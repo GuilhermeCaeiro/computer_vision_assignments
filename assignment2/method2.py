@@ -109,7 +109,7 @@ class ApplicationUI:
         print("Lines: \n", lines)
 
         system_of_equations = []
-        #b = []
+        b = []
 
         for i in range(0, 10, 2):
             l = lines[i]
@@ -121,17 +121,17 @@ class ApplicationUI:
                 (l[0, 1] * m[0, 1]),
                 ((l[0, 0] * m[0, 2]) + (l[0, 2] * m[0, 0])) / 2,
                 ((l[0, 1] * m[0, 2]) + (l[0, 2] * m[0, 1])) / 2,
-                (l[0, 2] * m[0, 2]),
+                #(l[0, 2] * m[0, 2]),
             ])
 
-            #b.append((l[0, 2] * m[0, 2]))
+            b.append( - (l[0, 2] * m[0, 2]))
 
-        system_of_equations.append([0, 0, 0, 0, 0, 1]) # last number is 1 to force f = 1
+        #system_of_equations.append([0, 0, 0, 0, 0, 1]) # last number is 1 to force f = 1
 
         print("System of equations: \n", system_of_equations)
 
-        b = np.matrix([[0, 0, 0, 0, 0, 1]]) # last number is 1 to force f = 1
-        #b = np.matrix([b])
+        #b = np.matrix([[0, 0, 0, 0, 0, 1]]) # last number is 1 to force f = 1
+        b = np.matrix([b])
 
         x = np.linalg.inv(system_of_equations) * b.T
 
@@ -145,7 +145,7 @@ class ApplicationUI:
 
         print("Conic matrix: \n", conic)
 
-        #"""
+        """
 
         KK_T = np.matrix([
             [x[0, 0], x[1, 0] / 2],
@@ -192,7 +192,7 @@ class ApplicationUI:
         projective_to_similarity_homography_matrix = projective_homography * affine_homography  
         #"""
 
-        """
+        #"""
         # Based on https://github.com/jimmysoda/imgrectifier/blob/master/proj2metric_circle.m
 
         w, v = np.linalg.eig(conic)
@@ -311,8 +311,9 @@ class ApplicationUI:
         print("totals", total_x, total_y, total_y/total_x)
 
         # output
-        output_width = 768
+        output_width = 1024
         output_height = int((total_y/total_x) * output_width)
+        output_height = 768
 
         #output_width = int(total_x)
         #output_height = int(total_y)

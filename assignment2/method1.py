@@ -205,6 +205,18 @@ class ApplicationUI:
             [338, 143, 1],
         ])
 
+        deformed_points = np.matrix([
+            [379, 180, 1],
+            [478, 45, 1],
+            [379, 80, 1],
+            [682, 75, 1],
+
+            [434, 18, 1],
+            [715, 193, 1],
+            [253, 172, 1],
+            [687, 24, 1],
+        ])
+
         print(deformed_points)
         line_one = np.cross(deformed_points[0], deformed_points[1])
         line_two = np.cross(deformed_points[2], deformed_points[3])
@@ -221,14 +233,19 @@ class ApplicationUI:
         print("lines", line_one, line_two, line_three, line_four)
 
         A = np.matrix([
-            [line_one[0, 0] * line_two[0, 0], line_one[0, 0] * line_two[0, 1] + line_one[0, 1] * line_two[0, 0], line_one[0, 1] * line_two[0, 1]],
-            [line_three[0, 0] * line_four[0, 0], line_three[0, 0] * line_four[0, 1] + line_three[0, 1] * line_four[0, 0], line_three[0, 1] * line_four[0, 1]],
-            [0, 0, 1]
+            [line_one[0, 0] * line_two[0, 0], line_one[0, 0] * line_two[0, 1] + line_one[0, 1] * line_two[0, 0]],#, line_one[0, 1] * line_two[0, 1]],
+            [line_three[0, 0] * line_four[0, 0], line_three[0, 0] * line_four[0, 1] + line_three[0, 1] * line_four[0, 0]]#, line_three[0, 1] * line_four[0, 1]],
+            #[0, 0, 1]
         ])
+
+        
 
         print(A)
 
-        b = np.matrix([[0,0,1]])
+        #b = np.matrix([[0,0,1]])
+
+        b = np.matrix([[- (line_one[0, 1] * line_two[0, 1]), - (line_three[0, 1] * line_four[0, 1])]])
+
 
         x = np.linalg.solve(A, b.T)
 
@@ -252,7 +269,7 @@ class ApplicationUI:
 
         print("KK.T matrix: \n", KK_T)
 
-        
+        #"""
         K = scipy.linalg.cholesky(KK_T, lower = False)
 
         print("K matrix: \n", K)
@@ -263,6 +280,8 @@ class ApplicationUI:
             [0, 0, 1]
         ])
 
+        #"""
+        
         """
         # Based on https://github.com/AVINASH793/Affine-And-Metric-Rectification-of-Image/blob/master/Metric_rectification.m
         U, S, V = np.linalg.svd(KK_T)
@@ -284,7 +303,9 @@ class ApplicationUI:
             [K[0, 0], K[0, 1], 0],
             [K[1, 0], K[1, 1], 0],
             [0, 0, 1]
-        ])"""
+        ])
+
+        #"""
 
         
         """affine_homography_matrix = np.matrix([
@@ -380,8 +401,9 @@ class ApplicationUI:
         print("totals", total_x, total_y, total_y/total_x)
 
         # output
-        output_width = 768
-        output_height = int((total_y/total_x) * output_width)
+        output_width = 1024
+        #output_height = int((total_y/total_x) * output_width)
+        output_height = 768
 
         #output_width = int(total_x)
         #output_height = int(total_y)
