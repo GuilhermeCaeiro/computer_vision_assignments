@@ -129,7 +129,7 @@ class ApplicationUI:
             #[506, 377, 1],
             #[34, 54, 1],
         ])
-        #"""
+        """
         deformed_points = np.matrix([
             [276.43, 619.724, 1],
             [1003.4, 537.333, 1],
@@ -155,7 +155,7 @@ class ApplicationUI:
 
         print("lines", line_one, line_two, line_three, line_four)
 
-        """
+        #"""
         line_one = (line_one * (1/line_one[0, 2]))#.astype(int)
         line_two = (line_two * (1/line_two[0, 2]))#.astype(int)
         line_three = (line_three * (1/line_three[0, 2]))#.astype(int)
@@ -270,7 +270,7 @@ class ApplicationUI:
             [342, 257, 1],
         ])
 
-        deformed_points = np.matrix([
+        """deformed_points = np.matrix([
             [148, 84, 1],
             [688, 181, 1],
             [261, 104, 1],
@@ -281,6 +281,7 @@ class ApplicationUI:
             [461, 8, 1],
             [455, 416, 1],
         ])
+        #"""
 
         """deformed_points = np.matrix([
             [379, 180, 1],
