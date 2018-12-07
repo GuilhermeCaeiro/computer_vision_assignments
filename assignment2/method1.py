@@ -111,6 +111,38 @@ class ApplicationUI:
             [34, 54, 1],
         ])
 
+        deformed_points = np.matrix([
+            [34, 54, 1],
+            [506, 377, 1],
+            [38, 163, 1],
+            [280, 374, 1],
+
+
+            [17, 385, 1],
+            [334, 149, 1],
+            [228, 385, 1],
+            [472, 153, 1],
+
+
+            #[280, 374, 1],
+            #[38, 163, 1],
+            #[506, 377, 1],
+            #[34, 54, 1],
+        ])
+        #"""
+        deformed_points = np.matrix([
+            [276.43, 619.724, 1],
+            [1003.4, 537.333, 1],
+            [150.78, 325.982, 1],
+            [985.455, 354.64, 1],
+
+            [534.91, 89.5556, 1],
+            [536.705, 583.902, 1],
+            [796.98, 55.5244, 1],
+            [798.775, 447.778, 1],
+        ])
+        #"""
+
 
         # TODO Uncommet
         #deformed_points = self.clicked_points_list
@@ -123,12 +155,14 @@ class ApplicationUI:
 
         print("lines", line_one, line_two, line_three, line_four)
 
+        """
         line_one = (line_one * (1/line_one[0, 2]))#.astype(int)
         line_two = (line_two * (1/line_two[0, 2]))#.astype(int)
         line_three = (line_three * (1/line_three[0, 2]))#.astype(int)
         line_four = (line_four * (1/line_four[0, 2]))#.astype(int)
 
         print("lines", line_one, line_two, line_three, line_four)
+        #"""
 
         point_one_in_the_infinite = np.cross(line_one, line_two)
         point_two_in_the_infinite = np.cross(line_three, line_four)
@@ -139,6 +173,10 @@ class ApplicationUI:
 
         print("line in the infinite", line_in_the_infinite)
 
+        line_in_the_infinite = line_in_the_infinite * (1/line_in_the_infinite[0, 2])
+
+        print("line in the infinite normalized", line_in_the_infinite)
+
         # matrix to transform from projective space to affine
         projective_homography_matrix = np.matrix([
             [1, 0, 0], 
@@ -147,6 +185,8 @@ class ApplicationUI:
         ])
 
         print(projective_homography_matrix)
+
+        print(np.linalg.inv(projective_homography_matrix))
 
 
         #affine_homography_matrix = None
@@ -206,6 +246,43 @@ class ApplicationUI:
         ])
 
         deformed_points = np.matrix([
+            [47, 73, 1],
+            [296, 228, 1],
+           
+            [126, 231, 1],
+            [348, 156, 1],
+
+            [348, 64, 1],
+            [483, 152, 1],
+            [296, 123, 1],
+            [566, 31, 1],
+        ])
+
+        deformed_points = np.matrix([
+            [47, 73, 1],
+            [296, 228, 1],
+            [126, 231, 1],
+            [348, 156, 1],
+
+            [85, 97, 1],
+            [539, 90, 1],
+            [489, 56, 1],
+            [342, 257, 1],
+        ])
+
+        deformed_points = np.matrix([
+            [148, 84, 1],
+            [688, 181, 1],
+            [261, 104, 1],
+            [258, 339, 1],
+
+            [385, 5, 1],
+            [766, 75, 1],
+            [461, 8, 1],
+            [455, 416, 1],
+        ])
+
+        """deformed_points = np.matrix([
             [379, 180, 1],
             [478, 45, 1],
             [379, 80, 1],
@@ -215,7 +292,21 @@ class ApplicationUI:
             [715, 193, 1],
             [253, 172, 1],
             [687, 24, 1],
-        ])
+        ])"""
+
+        """deformed_points = np.matrix([
+            [164.407, 369.791, 1],
+            [1031.61, 522.374, 1],
+            [923.207, 502.628, 1],
+            [919.593, 14.3608, 1],
+
+            [130.08, 193.871, 1],
+            [910.56, 332.094, 1],
+            [648.593, 360.815, 1],
+            [646.787, 48.4677, 1],
+        ])"""
+
+        
 
         print(deformed_points)
         line_one = np.cross(deformed_points[0], deformed_points[1])
@@ -270,7 +361,7 @@ class ApplicationUI:
         print("KK.T matrix: \n", KK_T)
 
         #"""
-        K = scipy.linalg.cholesky(KK_T, lower = False)
+        K = scipy.linalg.cholesky(KK_T, lower = True)
 
         print("K matrix: \n", K)
 
@@ -324,7 +415,8 @@ class ApplicationUI:
         #self.image_canvas.create_line(deformed_points[6, 0], deformed_points[6, 1], deformed_points[7, 0], deformed_points[7, 1], width=5, fill='blue')
         #self.run()
 
-        output_image_array = self.transform(affine_homography_matrix, np.array(self.image_data))
+        #output_image_array = self.transform(affine_homography_matrix, np.array(self.image_data))
+        output_image_array = self.transform(np.linalg.inv(affine_homography_matrix), np.array(self.image_data))
         self.image_data = output_image_array
 
         output_image = Image.fromarray(output_image_array.astype('uint8'))
@@ -335,8 +427,7 @@ class ApplicationUI:
 
 
 
-
-
+    #"""
     def transform(self, homography, deformed_image_array):
         homography_matrix = homography
         homography_matrix_inverse = np.linalg.inv(homography_matrix)
@@ -401,9 +492,11 @@ class ApplicationUI:
         print("totals", total_x, total_y, total_y/total_x)
 
         # output
-        output_width = 1024
-        #output_height = int((total_y/total_x) * output_width)
-        output_height = 768
+        output_width = 768
+        #output_height = 768
+        #output_width = int((total_y/total_x) * output_height)
+        output_height = int((total_y/total_x) * output_width)
+        
 
         #output_width = int(total_x)
         #output_height = int(total_y)
@@ -428,16 +521,16 @@ class ApplicationUI:
             for y in range(0, output_height):
                 deformed_point = homography_matrix_inverse * np.matrix([[x_min + int(x * step_x), y_min + int(y * step_y), 1]]).T
 
-                try:
-                    unscaled_deformed_point = [int(deformed_point[0,0] / deformed_point[2,0]), int(deformed_point[1,0] / deformed_point[2,0])]
+                #try:
+                unscaled_deformed_point = [int(deformed_point[0,0] / deformed_point[2,0]), int(deformed_point[1,0] / deformed_point[2,0])]
 
-                    if((unscaled_deformed_point[0] < 0 or unscaled_deformed_point[0] >= deformed_image_width) or (unscaled_deformed_point[1] < 0 or unscaled_deformed_point[1] >= deformed_image_height)):
-                        continue
+                if((unscaled_deformed_point[0] < 0 or unscaled_deformed_point[0] >= deformed_image_width) or (unscaled_deformed_point[1] < 0 or unscaled_deformed_point[1] >= deformed_image_height)):
+                    continue
 
-                    output_image_array[y, x] = deformed_image_array[unscaled_deformed_point[1], unscaled_deformed_point[0]]
+                output_image_array[y, x] = deformed_image_array[unscaled_deformed_point[1], unscaled_deformed_point[0]]
                     
-                except:
-                    pass#print("error")
+                #except:
+                #    pass#print("error")
 
 
         #print(output_image_array[0])
@@ -445,6 +538,8 @@ class ApplicationUI:
         print(output_image_array.shape)
 
         return output_image_array
+
+    #"""
 
 
     def uptade_interface_to_step_two(self):

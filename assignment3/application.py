@@ -143,9 +143,9 @@ def transform(homography, base_image, second_image):
 #    return 
 
 
-#files = ["m_img1.png", "m_img2.png", "m_img3.png"]
+files = ["m_img1.png", "m_img2.png", "m_img3.png"]
 #files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png"]#, "alcimg5.png", "alcimg6.png", "alcimg7.png",]
-files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png", "alcimg5.png", "alcimg6.png", "alcimg7.png",]
+#files = ["alcimg1.png", "alcimg2.png", "alcimg3.png", "alcimg4.png", "alcimg5.png", "alcimg6.png", "alcimg7.png",]
 #files = ["P_20181111_023936.jpg", "P_20181111_023940.jpg", "P_20181111_023943.jpg", "P_20181111_023946.jpg", "P_20181111_023950.jpg", "P_20181111_023954.jpg", "P_20181111_023956.jpg"]
 #files = ["IMG-20181109-WA0003_1.jpg", "IMG-20181109-WA0004_2.jpg", "IMG-20181109-WA0005_3.jpg", "IMG-20181109-WA0001_4.jpg", "IMG-20181109-WA0002_5.jpg"]
 
@@ -202,7 +202,7 @@ for i in range(len(files) - 2, -1, -1):
     rawMatches = matcher.knnMatch(img1_features, img2_features, 2)
     
     matches = []
-    ratio = 0.7
+    ratio = 0.75 # 0.7 for Alcatraz image set, 0.75 for the desertic scene.
     reprojThresh = 0.2
 
     for match in rawMatches:

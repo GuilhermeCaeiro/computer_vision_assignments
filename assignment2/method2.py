@@ -311,9 +311,9 @@ class ApplicationUI:
         print("totals", total_x, total_y, total_y/total_x)
 
         # output
-        output_width = 1024
+        output_width = 768#1024
         output_height = int((total_y/total_x) * output_width)
-        output_height = 768
+        #output_height = 768
 
         #output_width = int(total_x)
         #output_height = int(total_y)
